@@ -1,11 +1,13 @@
 package controllers
 
-import models.Task
+
 
 import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+
+import models.Task
 
 object Application extends Controller {
 
@@ -27,7 +29,10 @@ object Application extends Controller {
   )
 }
 
-  def deleteTask(id: Long) = TODO
+  def deleteTask(id: Long) = Action {
+    Task.delete(id)
+    Redirect(routes.Application.tasks)
+  }
 
   val taskForm = Form(
       "label" -> nonEmptyText
