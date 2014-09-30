@@ -11,12 +11,18 @@ import models.Task
 
 object Application extends Controller {
 
+  implicit val jsonWriter : Writes[Task] = (
+    (JsPath \  "id").write[Long] and
+    (JsPath \ "label").write[String]
+    )(unlift(Task.unapply))
+    
   def index = Action {
-      Redirect(routes.Application.tasks)
+      Ok(views.html.index(Task.all(), taskForm))
    }
 
   def tasks = Action {
-      Ok(views.html.index(Task.all(), taskForm))
+      val json = Json.toJson(Task.all())
+      Ok(json)
    }
 
   def newTask = Action { implicit request =>
