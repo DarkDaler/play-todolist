@@ -24,13 +24,18 @@ object Application extends Controller {
       val json = Json.toJson(Task.all())
       Ok(json)
    }
+  def getTask(id: Long) = Action {
+    val json = Json.toJson(Task.getTasks(id))
+    Ok(json)
+  }
 
   def newTask = Action { implicit request =>
   taskForm.bindFromRequest.fold(
     errors => BadRequest(views.html.index(Task.all(), errors)),
     label => {
       Task.create(label)
-      Redirect(routes.Application.tasks)
+      val json = Json.toJson(Task.getTask())
+      Created(json)
     }
   )
 }
