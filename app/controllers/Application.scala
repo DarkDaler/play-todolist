@@ -41,8 +41,13 @@ object Application extends Controller {
 }
 
   def deleteTask(id: Long) = Action {
-    Task.delete(id)
-    Redirect(routes.Application.tasks)
+    if(Task.getTasks(id) != Nil){
+      Task.delete(id)
+      Redirect(routes.Application.tasks)    
+    }
+    else{
+      NotFound
+    }
   }
 
   val taskForm = Form(
