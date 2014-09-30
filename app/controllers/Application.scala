@@ -1,11 +1,11 @@
 package controllers
 
-
-
 import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 import models.Task
 
@@ -15,7 +15,7 @@ object Application extends Controller {
     (JsPath \  "id").write[Long] and
     (JsPath \ "label").write[String]
     )(unlift(Task.unapply))
-    
+
   def index = Action {
       Ok(views.html.index(Task.all(), taskForm))
    }
