@@ -16,6 +16,21 @@ object Task {
       }
    }
 
+   def getTasks(id: Long) : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where id = {id}").on(
+            'id -> id
+            ).as(task *)
+      }
+   }
+
+   def getTask() : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where id = (select MAX(id) from task)").on(
+            ).as(task *)
+      }
+   }
+
    def all(): List[Task] = DB.withConnection {implicit c =>
       SQL("select * from task").as(task *)
    }
