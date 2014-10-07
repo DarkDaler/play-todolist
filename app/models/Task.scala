@@ -35,10 +35,11 @@ object Task {
       SQL("select * from task").as(task *)
    }
 
-   def create(label: String){
+   def create(label: String, user: String){
       DB.withConnection { implicit c =>
-         SQL("insert into task (label) values ({label})").on(
-            'label -> label
+         SQL("insert into task (label,idUser) values ({label},{user})").on(
+            'label -> label,
+            'user -> user
          ).executeUpdate()
       }
    }

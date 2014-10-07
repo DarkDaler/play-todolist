@@ -11,3 +11,14 @@ ALTER TABLE task add constraint id_user foreign key(idUser) references taskUser(
 DROP TABLE IF EXISTS task;
 DROP SEQUENCE IF EXISTS task_id_seq;
 DROP TABLE IF EXISTS task-user;
+
+# --- Sample dataset
+
+# --- !Ups
+
+insert into taskUser (id) values ('admin');
+insert into taskUser (id) values ('anonimo');
+
+# --- !Downs
+
+delete from taskUser;

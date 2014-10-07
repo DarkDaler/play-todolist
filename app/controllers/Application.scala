@@ -29,11 +29,11 @@ object Application extends Controller {
     Ok(json)
   }
 
-  def newTask = Action { implicit request =>
+  def newTask(user: String) = Action { implicit request =>
   taskForm.bindFromRequest.fold(
     errors => BadRequest(views.html.index(Task.all(), errors)),
     label => {
-      Task.create(label)
+      Task.create(label,user)
       val json = Json.toJson(Task.getTask())
       Created(json)
     }
