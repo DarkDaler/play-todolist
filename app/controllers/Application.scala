@@ -60,7 +60,7 @@ object Application extends Controller {
       Redirect(routes.Application.tasks)    
     }
     else{
-      NotFound
+      NotFound("No existe la tarea")
     }
   }
 

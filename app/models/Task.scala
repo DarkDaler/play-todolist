@@ -20,14 +20,14 @@ object Task {
       DB.withConnection {implicit c =>
          SQL("select * from task where idUser = {idUser}").on(
             'idUser -> idUser
-            ).as(task *)
+         ).as(task *)
       }
    }
    def getTasks(id: Long) : List[Task] = {
       DB.withConnection {implicit c =>
-         SQL("select * from task where (id,idUser) = ({id},'anonimo')").on(
+         SQL("select * from task where id = {id}").on(
             'id -> id
-            ).as(task *)
+         ).as(task *)
       }
    }
 
@@ -38,10 +38,8 @@ object Task {
       }
    }
 
-
-
    def all(): List[Task] = DB.withConnection {implicit c =>
-      SQL("select * from task").as(task *)
+      SQL("select * from task where idUser = 'anonimo'").as(task *)
    }
 
    def create(label: String, user: String){
