@@ -16,6 +16,13 @@ object Task {
       }
    }
 
+   def getTasksUser(idUser: String) : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where idUser = {idUser}").on(
+            'idUser -> idUser
+            ).as(task *)
+      }
+   }
    def getTasks(id: Long) : List[Task] = {
       DB.withConnection {implicit c =>
          SQL("select * from task where (id,idUser) = ({id},'anonimo')").on(

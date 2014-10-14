@@ -8,7 +8,7 @@ GET     /                       controllers.Application.index
 # Tasks          
 GET     /tasks                  controllers.Application.tasks
 GET     /tasks/:id              controllers.Application.getTask(id: Long)
-
+GET     /users/:login/tasks     controllers.Application.getTaskUser(login: String)
 POST    /tasks                  controllers.Application.newTask
 POST    /users/:user/tasks      controllers.Application.newTaskUser(user: String)
 DELETE  /tasks/:id/delete       controllers.Application.deleteTask(id: Long)
