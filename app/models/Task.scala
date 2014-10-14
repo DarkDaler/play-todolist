@@ -17,7 +17,7 @@ object Task {
    }
 
    //DEVUELVE LAS TAREAS CON EL USER PASADO
-   def getTasksUser(idUser: String) : List[Task] = {
+   def getTaskUser(idUser: String) : List[Task] = {
       DB.withConnection {implicit c =>
          SQL("select * from task where idUser = {idUser}").on(
             'idUser -> idUser
@@ -42,6 +42,16 @@ object Task {
       }
    }
 
+   //DEVUELVE UNA TAREA CON UNA FECHA ASIGNADA
+   def getTaskUserData(idUser: String, fecha: String) : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where (idUser,fecha) = ({idUser},{fecha})").on(
+            'idUser -> idUser,
+            'fecha -> fecha
+         ).as(task *)
+      }
+   }
+
    //DEVUELVE TODAS LAS TAREAS CREADAS POR EL USER ANONIMO
    def all(): List[Task] = DB.withConnection {implicit c =>
       SQL("select * from task where idUser = 'anonimo'").as(task *)
@@ -62,6 +72,18 @@ object Task {
          SQL("insert into task (label,idUser) values ({label},{user})").on(
             'label -> label,
             'user -> user
+         ).executeUpdate()
+      }
+   }
+
+   //METODO QUE CREA UNA TAREA CON UN LABEL, ASIGNANDOSELO A UN USER, Y PONIENDOLE
+   //UNA FECHA
+   def createDate(label: String, user: String, fecha: String){
+      DB.withConnection { implicit c =>
+         SQL("insert into task (label,idUser,fecha) values ({label},{user},{fecha})").on(
+            'label -> label,
+            'user -> user,
+            'fecha -> fecha
          ).executeUpdate()
       }
    }

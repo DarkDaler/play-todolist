@@ -43,8 +43,34 @@ object Application extends Controller {
   //DEVUELVE 404 NOT FOUND
   def getTaskUser(user: String) = Action {
     if(Task.verifyUser(user) == 1){
-      val json = Json.toJson(Task.getTasksUser(user))
+      val json = Json.toJson(Task.getTaskUser(user))
       Ok(json)
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }
+  }
+
+  //METODO QUE DEVUELVE TODAS LAS TAREAS DE UN USUARIO CON UNA FECHA DADA
+  def getTaskUserDate(user: String, date: String) = Action {
+    if(Task.verifyUser(user) == 1){
+      if(date(4) == '-' && date(7) == '-'){
+        if((date.substring(5,7)).toInt >= 1 && (date.substring(5,7)).toInt <= 12){
+          if((date.substring(8,10)).toInt >= 1 && (date.substring(8,10)).toInt <= 31){
+            val json = Json.toJson(Task.getTaskUserData(user,date))
+            Ok(json)
+          }
+          else{
+            BadRequest("Introduce un dia valido entre 1 y 31")
+          }
+        }
+        else{
+          BadRequest("Introduce un mes valido entre 1 y 12")
+        }  
+      }
+      else{
+        BadRequest("Formato de fecha admitido YYYY-MM-DD")
+      }
     }
     else{
       NotFound("Usuario no encontrado")
@@ -81,7 +107,41 @@ object Application extends Controller {
       } 
     )
   }
-  
+
+  //METODO QUE CREA UNA TAREA CON UN USER Y UNA FECHA POR 
+  //LA RUTA /users/{login}/tasks/YYYY-MM-DD
+  def newTaskUserDate(user: String, date: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        if(Task.verifyUser(user) == 1){
+          if(date(4) == '-' && date(7) == '-'){
+            if((date.substring(5,7)).toInt >= 1 && (date.substring(5,7)).toInt <= 12){
+              if((date.substring(8,10)).toInt >= 1 && (date.substring(8,10)).toInt <= 31){
+                Task.createDate(label,user,date)
+                val json = Json.toJson(Task.getTask())
+                Created(json)
+              }
+              else{
+                BadRequest("Introduce un dia valido entre 1 y 31")
+              }
+            }
+            else{
+              BadRequest("Introduce un mes valido entre 1 y 12")
+            }  
+          }
+          else{
+            BadRequest("Formato de fecha admitido YYYY-MM-DD")
+          }
+          
+        }
+        else{
+          NotFound("Usuario no encontrado")
+        }  
+      } 
+    )
+  }
+
   //ELIMINA UNA TAREA DADO SU ID. SI NO EXISTE DEVUELVE 404 NOT FOUND
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){
