@@ -17,7 +17,7 @@ object Task {
    }
 
    //DEVUELVE LAS TAREAS CON EL USER PASADO
-   def getTasksUser(idUser: String) : List[Task] = {
+   def getTaskUser(idUser: String) : List[Task] = {
       DB.withConnection {implicit c =>
          SQL("select * from task where idUser = {idUser}").on(
             'idUser -> idUser
@@ -39,6 +39,16 @@ object Task {
       DB.withConnection {implicit c =>
          SQL("select * from task where id = (select MAX(id) from task)").on(
             ).as(task *)
+      }
+   }
+
+   //DEVUELVE UNA TAREA CON UNA FECHA ASIGNADA
+   def getTaskUserData(idUser: String, fecha: String) : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where (idUser,fecha) = ({idUser},{fecha})").on(
+            'idUser -> idUser,
+            'fecha -> fecha
+         ).as(task *)
       }
    }
 

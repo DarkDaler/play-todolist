@@ -17,7 +17,8 @@ POST    /users/:user/tasks          controllers.Application.newTaskUser(user: St
 
 # DATE
 
-POST    /users/:login/tasks/:date   controllers.Application.newTaskUserDate(login: String, date: String)
+GET     /users/:login/tasks/:date   controllers.Application.getTaskUserDate(login: String, date: String)
+POST    /users/:user/tasks/:date    controllers.Application.newTaskUserDate(user: String, date: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -43,8 +43,34 @@ object Application extends Controller {
   //DEVUELVE 404 NOT FOUND
   def getTaskUser(user: String) = Action {
     if(Task.verifyUser(user) == 1){
-      val json = Json.toJson(Task.getTasksUser(user))
+      val json = Json.toJson(Task.getTaskUser(user))
       Ok(json)
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }
+  }
+
+  //METODO QUE DEVUELVE TODAS LAS TAREAS DE UN USUARIO CON UNA FECHA DADA
+  def getTaskUserDate(user: String, date: String) = Action {
+    if(Task.verifyUser(user) == 1){
+      if(date(4) == '-' && date(7) == '-'){
+        if((date.substring(5,7)).toInt >= 1 && (date.substring(5,7)).toInt <= 12){
+          if((date.substring(8,10)).toInt >= 1 && (date.substring(8,10)).toInt <= 31){
+            val json = Json.toJson(Task.getTaskUserData(user,date))
+            Ok(json)
+          }
+          else{
+            BadRequest("Introduce un dia valido entre 1 y 31")
+          }
+        }
+        else{
+          BadRequest("Introduce un mes valido entre 1 y 12")
+        }  
+      }
+      else{
+        BadRequest("Formato de fecha admitido YYYY-MM-DD")
+      }
     }
     else{
       NotFound("Usuario no encontrado")
