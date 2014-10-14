@@ -3,17 +3,21 @@
 # ~~~~
 
 # Home page
-GET     /                       controllers.Application.index
+GET     /                           controllers.Application.index
                                 
 # Tasks          
-GET     /tasks                  controllers.Application.tasks
-GET     /tasks/:id              controllers.Application.getTask(id: Long)
-POST    /tasks                  controllers.Application.newTask
-DELETE  /tasks/:id/delete       controllers.Application.deleteTask(id: Long)
+GET     /tasks                      controllers.Application.tasks
+GET     /tasks/:id                  controllers.Application.getTask(id: Long)
+POST    /tasks                      controllers.Application.newTask
+DELETE  /tasks/:id/delete           controllers.Application.deleteTask(id: Long)
 
 # LOGIN
-GET     /users/:login/tasks     controllers.Application.getTaskUser(login: String)
-POST    /users/:user/tasks      controllers.Application.newTaskUser(user: String)
+GET     /users/:login/tasks         controllers.Application.getTaskUser(login: String)
+POST    /users/:user/tasks          controllers.Application.newTaskUser(user: String)
+
+# DATE
+
+POST    /users/:login/tasks/:date   controllers.Application.newTaskUserDate(login: String, date: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

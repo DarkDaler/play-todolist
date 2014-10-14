@@ -66,6 +66,18 @@ object Task {
       }
    }
 
+   //METODO QUE CREA UNA TAREA CON UN LABEL, ASIGNANDOSELO A UN USER, Y PONIENDOLE
+   //UNA FECHA
+   def createDate(label: String, user: String, fecha: String){
+      DB.withConnection { implicit c =>
+         SQL("insert into task (label,idUser,fecha) values ({label},{user},{fecha})").on(
+            'label -> label,
+            'user -> user,
+            'fecha -> fecha
+         ).executeUpdate()
+      }
+   }
+
    //METODO QUE ELIMINA UNA TAREA DADO SU ID
    def delete(id: Long) {
       DB.withConnection { implicit c =>

@@ -81,7 +81,23 @@ object Application extends Controller {
       } 
     )
   }
-  
+
+  def newTaskUserDate(user: String, date: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        if(Task.verifyUser(user) == 1){
+          Task.createDate(label,user,date)
+          val json = Json.toJson(Task.getTask())
+          Created(json)
+        }
+        else{
+          NotFound("Usuario no encontrado")
+        }  
+      } 
+    )
+  }
+
   //ELIMINA UNA TAREA DADO SU ID. SI NO EXISTE DEVUELVE 404 NOT FOUND
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){
