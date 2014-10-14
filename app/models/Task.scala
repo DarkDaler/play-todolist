@@ -18,7 +18,7 @@ object Task {
 
    def getTasks(id: Long) : List[Task] = {
       DB.withConnection {implicit c =>
-         SQL("select * from task where id = {id}").on(
+         SQL("select * from task where (id,idUser) = ({id},'anonimo')").on(
             'id -> id
             ).as(task *)
       }
@@ -30,6 +30,8 @@ object Task {
             ).as(task *)
       }
    }
+
+
 
    def all(): List[Task] = DB.withConnection {implicit c =>
       SQL("select * from task").as(task *)
