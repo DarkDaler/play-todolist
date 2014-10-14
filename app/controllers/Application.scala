@@ -87,9 +87,15 @@ object Application extends Controller {
       errors => BadRequest(views.html.index(Task.all(), errors)),
       label => {
         if(Task.verifyUser(user) == 1){
-          Task.createDate(label,user,date)
-          val json = Json.toJson(Task.getTask())
-          Created(json)
+          if(date(4) == '-' && date(7) == '-'){
+              Task.createDate(label,user,date)
+              val json = Json.toJson(Task.getTask())
+              Created(json)
+          }
+          else{
+            BadRequest("Formato de fecha admitido YYYY-MM-DD")
+          }
+          
         }
         else{
           NotFound("Usuario no encontrado")
