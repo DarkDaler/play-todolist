@@ -24,14 +24,22 @@ object Application extends Controller {
       val json = Json.toJson(Task.all())
       Ok(json)
    }
+
   def getTask(id: Long) = Action {
-    val json = Json.toJson(Task.getTasks(id))
-    Ok(json)
+    if(Task.getTasks(id) != Nil){
+      val json = Json.toJson(Task.getTasks(id))
+      Ok(json)
+    }
+    else{
+      NotFound("No existe la tarea")
+    }
   }
+
   def getTaskUser(user: String) = Action {
     val json = Json.toJson(Task.getTasksUser(user))
     Ok(json)
   }
+
   def newTask = Action { implicit request =>
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index(Task.all(), errors)),
