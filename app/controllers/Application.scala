@@ -24,21 +24,53 @@ object Application extends Controller {
       val json = Json.toJson(Task.all())
       Ok(json)
    }
+
   def getTask(id: Long) = Action {
-    val json = Json.toJson(Task.getTasks(id))
-    Ok(json)
+    if(Task.getTasks(id) != Nil){
+      val json = Json.toJson(Task.getTasks(id))
+      Ok(json)
+    }
+    else{
+      NotFound("No existe la tarea")
+    }
+  }
+
+  def getTaskUser(user: String) = Action {
+    if(Task.verifyUser(user) == 1){
+      val json = Json.toJson(Task.getTasksUser(user))
+      Ok(json)
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }
   }
 
   def newTask = Action { implicit request =>
-  taskForm.bindFromRequest.fold(
-    errors => BadRequest(views.html.index(Task.all(), errors)),
-    label => {
-      Task.create(label)
-      val json = Json.toJson(Task.getTask())
-      Created(json)
-    }
-  )
-}
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        Task.create(label, "anonimo")
+        val json = Json.toJson(Task.getTask())
+        Created(json)
+      }
+    )
+  }
+
+  def newTaskUser(user: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        if(Task.verifyUser(user) == 1){
+          Task.create(label,user)
+          val json = Json.toJson(Task.getTask())
+          Created(json)
+        }
+        else{
+          NotFound("Usuario no encontrado")
+        }  
+      } 
+    )
+  }
 
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){
@@ -46,7 +78,7 @@ object Application extends Controller {
       Redirect(routes.Application.tasks)    
     }
     else{
-      NotFound
+      NotFound("No existe la tarea")
     }
   }
 

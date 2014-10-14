@@ -16,11 +16,18 @@ object Task {
       }
    }
 
+   def getTasksUser(idUser: String) : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where idUser = {idUser}").on(
+            'idUser -> idUser
+         ).as(task *)
+      }
+   }
    def getTasks(id: Long) : List[Task] = {
       DB.withConnection {implicit c =>
          SQL("select * from task where id = {id}").on(
             'id -> id
-            ).as(task *)
+         ).as(task *)
       }
    }
 
@@ -32,13 +39,22 @@ object Task {
    }
 
    def all(): List[Task] = DB.withConnection {implicit c =>
-      SQL("select * from task").as(task *)
+      SQL("select * from task where idUser = 'anonimo'").as(task *)
    }
 
-   def create(label: String){
+   def verifyUser(id: String) : Long = {
+      DB.withConnection {implicit c =>
+         SQL("select count(*) from taskUser where id = {id}").on(
+            'id -> id
+         ).as(scalar[Long].single)
+      }
+   }
+
+   def create(label: String, user: String){
       DB.withConnection { implicit c =>
-         SQL("insert into task (label) values ({label})").on(
-            'label -> label
+         SQL("insert into task (label,idUser) values ({label},{user})").on(
+            'label -> label,
+            'user -> user
          ).executeUpdate()
       }
    }
