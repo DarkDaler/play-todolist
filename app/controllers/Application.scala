@@ -28,17 +28,27 @@ object Application extends Controller {
     val json = Json.toJson(Task.getTasks(id))
     Ok(json)
   }
+  def newTask = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        Task.create(label, "anonimo")
+        val json = Json.toJson(Task.getTask())
+        Created(json)
+      }
+    )
+  }
 
-  def newTask(user: String) = Action { implicit request =>
-  taskForm.bindFromRequest.fold(
-    errors => BadRequest(views.html.index(Task.all(), errors)),
-    label => {
-      Task.create(label,user)
-      val json = Json.toJson(Task.getTask())
-      Created(json)
-    }
-  )
-}
+  def newTaskUser(user: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        Task.create(label,user)
+        val json = Json.toJson(Task.getTask())
+        Created(json)
+      }
+    )
+  }
 
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){
