@@ -42,6 +42,14 @@ object Task {
       SQL("select * from task where idUser = 'anonimo'").as(task *)
    }
 
+   def verifyUser(id: String) : Long = {
+      DB.withConnection {implicit c =>
+         SQL("select count(*) from taskUser where id = {id}").on(
+            'id -> id
+         ).as(scalar[Long].single)
+      }
+   }
+
    def create(label: String, user: String){
       DB.withConnection { implicit c =>
          SQL("insert into task (label,idUser) values ({label},{user})").on(

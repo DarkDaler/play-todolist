@@ -36,8 +36,13 @@ object Application extends Controller {
   }
 
   def getTaskUser(user: String) = Action {
-    val json = Json.toJson(Task.getTasksUser(user))
-    Ok(json)
+    if(Task.verifyUser(user) == 1){
+      val json = Json.toJson(Task.getTasksUser(user))
+      Ok(json)
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }
   }
 
   def newTask = Action { implicit request =>
@@ -55,10 +60,15 @@ object Application extends Controller {
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index(Task.all(), errors)),
       label => {
-        Task.create(label,user)
-        val json = Json.toJson(Task.getTask())
-        Created(json)
-      }
+        if(Task.verifyUser(user) == 1){
+          Task.create(label,user)
+          val json = Json.toJson(Task.getTask())
+          Created(json)
+        }
+        else{
+          NotFound("Usuario no encontrado")
+        }  
+      } 
     )
   }
 
