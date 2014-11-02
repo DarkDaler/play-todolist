@@ -18,5 +18,6 @@ class ApplicationSpec extends Specification {
 
   "Application" should {
 
+
   }
 }
