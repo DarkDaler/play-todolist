@@ -101,5 +101,15 @@ class ApplicationSpec extends Specification {
       }
     }
 
+    "Prueba getTask(id) de tarea no existente FEATURE1" in {
+      running(FakeApplication()){
+
+        val Some(getTask) = route(FakeRequest(GET, "/tasks/1"))
+
+        status(getTask) must equalTo(404)
+        contentAsString(getTask) must contain("No existe la tarea")
+      }
+    }
+
   }
 }
