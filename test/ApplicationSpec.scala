@@ -24,7 +24,16 @@ class ApplicationSpec extends Specification {
       running(FakeApplication()){
         route(FakeRequest(GET, "/erronea")) must beNone
       }
-    }
+   }
+
+   "Prueba pagina index" in {
+      running(FakeApplication()){
+        val Some(home) = route(FakeRequest(GET, "/"))
+
+        status(home) must equalTo(OK)  
+        contentType(home) must beSome.which(_ == "text/html")   
+      }
+   }
 
 
   }
