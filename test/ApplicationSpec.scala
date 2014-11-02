@@ -18,6 +18,14 @@ class ApplicationSpec extends Specification {
 
   "Application" should {
 
+   //FEATURE 1
+
+   "Envio 404 de peticion erronea" in {
+      running(FakeApplication()){
+        route(FakeRequest(GET, "/erronea")) must beNone
+      }
+    }
+
 
   }
 }
