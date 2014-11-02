@@ -65,6 +65,23 @@ class ModelSpec extends Specification {
             tasksNew.length must equalTo(0)
          }
     }
+    "Test eliminar una tarea inexistente FEATURE1" in {
+         running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+            Task.create("prueba1", "anonimo")
+
+            val tasks = Task.all()
+
+            tasks.length must equalTo(1)
+
+            Task.delete(2)
+
+            val tasksNew = Task.all()
+
+            tasksNew.length must equalTo(1)
+
+         }
+    }
 
    } 
   
