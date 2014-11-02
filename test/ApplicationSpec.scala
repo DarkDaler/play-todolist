@@ -60,5 +60,30 @@ class ApplicationSpec extends Specification {
       }
    } 
 
+   "Prueba introducir varias tareas FEATURE 1" in {
+      running(FakeApplication()){
+
+        val Some(post1) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+        status(post1) must equalTo(CREATED)
+
+        val Some(post2) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba2"))
+        status(post2) must equalTo(CREATED)
+
+        val Some(post3) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba3"))
+        status(post3) must equalTo(CREATED)
+
+        val Some(post4) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba4"))
+        status(post4) must equalTo(CREATED)
+        
+        val Some(tasks) = route(FakeRequest(GET, "/tasks"))
+
+        status(tasks) must equalTo(OK)
+        val json =contentAsJson(tasks)
+        var jsonString = Json.stringify(json)
+
+        jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"},{\"id\":2,\"label\":\"prueba2\"},{\"id\":3,\"label\":\"prueba3\"},{\"id\":4,\"label\":\"prueba4\"}]")
+      }
+    }
+
   }
 }
