@@ -35,6 +35,17 @@ class ApplicationSpec extends Specification {
       }
    }
 
+   "Prueba pagina task vacia FEATURE 1" in {
+      running(FakeApplication()){
+        val Some(tasks) = route(FakeRequest(GET, "/tasks"))
+
+        status(tasks) must equalTo(OK)
+        val json = contentAsJson(tasks)
+        var jsonString = Json.stringify(json)
+
+        jsonString must equalTo("[]")
+      }
+   }
 
   }
 }
