@@ -35,7 +35,21 @@ class ModelSpec extends Specification {
             tasks.isEmpty must equalTo(true)
          }
     }
+    "Test crear una task y checkear que se ha creado FEATURE 1" in {
+         running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
 
+            Task.create("prueba1", "anonimo")
+
+            val tasks = Task.all()
+
+            tasks.length must equalTo(1)
+
+            tasks.head.id must equalTo(1)
+            tasks.head.label must equalTo("prueba1")
+
+         }
+    }
+    
    } 
   
 }
