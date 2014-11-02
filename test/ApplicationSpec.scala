@@ -130,8 +130,23 @@ class ApplicationSpec extends Specification {
         val json =contentAsJson(tasks)
         var jsonString = Json.stringify(json)
         jsonString must equalTo("[{\"id\":2,\"label\":\"prueba2\"},{\"id\":3,\"label\":\"prueba3\"}]")
+      }
+    }
 
+    "Prueba a eliminar una tarea inexistente FEATURE1" in {
+      running(FakeApplication()){
 
+        val Some(post1) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+        status(post1) must equalTo(CREATED)
+
+        val Some(deleteTask) = route(FakeRequest(DELETE, "/tasks/2"))
+        status(deleteTask) must equalTo(404)
+        contentAsString(deleteTask) must contain("No existe la tarea")
+
+        val Some(tasks) = route(FakeRequest(GET, "/tasks"))
+        val json =contentAsJson(tasks)
+        var jsonString = Json.stringify(json)
+        jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
       }
     }
 
