@@ -17,6 +17,8 @@ class ModelSpec extends Specification {
 
   "Models" should {
 
+   //TESTS FEATURE 1
+
     "Test tasks vacias FEATURE 1" in {  
         running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
 
@@ -41,6 +43,20 @@ class ModelSpec extends Specification {
             Task.create("prueba1", "anonimo")
 
             val tasks = Task.all()
+
+            tasks.length must equalTo(1)
+
+            tasks.head.id must equalTo(1)
+            tasks.head.label must equalTo("prueba1")
+
+         }
+    }
+    "Test checkear con getTasks(id) una tarea creada FEATURE 1" in{
+         running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+            Task.create("prueba1", "anonimo")
+
+            val tasks = Task.getTasks(1)
 
             tasks.length must equalTo(1)
 
@@ -84,5 +100,4 @@ class ModelSpec extends Specification {
     }
 
    } 
-  
 }
