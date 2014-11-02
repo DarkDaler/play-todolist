@@ -51,7 +51,7 @@ class ModelSpec extends Specification {
 
          }
     }
-    "Test checkear con getTasks(id) una tarea creada FEATURE 1" in{
+    "Test checkear con getTasks(id) una tarea creada FEATURE 1" in {
          running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
 
             Task.create("prueba1", "anonimo")
@@ -62,6 +62,22 @@ class ModelSpec extends Specification {
 
             tasks.head.id must equalTo(1)
             tasks.head.label must equalTo("prueba1")
+
+         }
+    }
+    "Test crear varias tareas FEATURE1" in {
+         running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+            Task.create("prueba1", "anonimo")
+            Task.create("prueba2", "anonimo")
+            Task.create("prueba3", "anonimo")
+            Task.create("prueba4", "anonimo")
+
+            val tasks = Task.all()
+
+            tasks.length must equalTo(4)
+
+            tasks.last.label must equalTo("prueba4")
 
          }
     }
