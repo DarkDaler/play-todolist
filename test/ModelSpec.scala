@@ -49,7 +49,23 @@ class ModelSpec extends Specification {
 
          }
     }
-    
+    "Test crear y eliminar una tarea FEATURE1" in {
+         running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+            Task.create("prueba1", "anonimo")
+
+            val tasks = Task.all()
+
+            tasks.length must equalTo(1)
+
+            Task.delete(1)
+
+            val tasksNew = Task.all()
+
+            tasksNew.length must equalTo(0)
+         }
+    }
+
    } 
   
 }
