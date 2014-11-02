@@ -111,5 +111,29 @@ class ApplicationSpec extends Specification {
       }
     }
 
+    "Prueba eliminar una tarea FEATURE1" in {
+      running(FakeApplication()){
+
+        val Some(post1) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+        status(post1) must equalTo(CREATED)
+
+        val Some(post2) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba2"))
+        status(post2) must equalTo(CREATED)
+
+        val Some(post3) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba3"))
+        status(post3) must equalTo(CREATED)
+
+        val Some(deleteTask) = route(FakeRequest(DELETE, "/tasks/1"))
+        redirectLocation(deleteTask) must beSome.which(_ == "/tasks")
+
+        val Some(tasks) = route(FakeRequest(GET, "/tasks"))
+        val json =contentAsJson(tasks)
+        var jsonString = Json.stringify(json)
+        jsonString must equalTo("[{\"id\":2,\"label\":\"prueba2\"},{\"id\":3,\"label\":\"prueba3\"}]")
+
+
+      }
+    }
+
   }
 }
