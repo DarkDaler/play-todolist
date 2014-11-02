@@ -26,6 +26,15 @@ class ModelSpec extends Specification {
             tasks.isEmpty must equalTo(true)
         }
     }
+    "Test busqueda task en vacia FEATURE 1" in {
+         running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+            //La BD está vacia
+            val tasks = Task.getTasks(1)
+
+            tasks.isEmpty must equalTo(true)
+         }
+    }
 
    } 
   
