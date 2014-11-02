@@ -47,5 +47,18 @@ class ApplicationSpec extends Specification {
       }
    }
 
+   "Prueba introducir 1 tarea FEATURE 1" in {
+      running(FakeApplication()){
+
+        val Some(tasks) = route(FakeRequest(POST, "/tasks").withFormUrlEncodedBody("label" -> "prueba"))
+
+        status(tasks) must equalTo(CREATED)
+        val json =contentAsJson(tasks)
+        var jsonString = Json.stringify(json)
+
+        jsonString must equalTo("[{\"id\":1,\"label\":\"prueba\"}]")
+      }
+   } 
+
   }
 }
