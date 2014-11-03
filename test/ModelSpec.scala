@@ -131,5 +131,27 @@ class ModelSpec extends Specification {
 
         }
 
+        "Test inserta 2 task a admin hacer getTaskUser(user)" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.create("prueba1", "admin")
+                Task.create("prueba2", "admin")
+
+                Task.create("pruebaAnonima", "anonimo")
+
+                val tasksAnonimo = Task.all()
+
+                tasksAnonimo.length must equalTo(1)
+
+                val tasksAdmin = Task.getTaskUser("admin")
+
+                tasksAdmin.length must equalTo(2)
+
+                tasksAdmin.head.label must equalTo("prueba1")
+                tasksAdmin.last.label must equalTo("prueba2")
+
+            }
+        }
+
    }
 }
