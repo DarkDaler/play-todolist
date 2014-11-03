@@ -153,5 +153,28 @@ class ModelSpec extends Specification {
             }
         }
 
+        "Test eliminar una task a usuario registrado" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.create("prueba1", "admin")
+                Task.create("prueba2", "admin")
+
+                Task.create("pruebaAnonima", "anonimo") 
+
+                Task.delete(2)
+
+                val tasksAnonimo = Task.all()
+
+                tasksAnonimo.length must equalTo(1)
+
+                val tasksAdmin = Task.getTaskUser("admin")
+
+                tasksAdmin.length must equalTo(1) 
+                tasksAdmin.head.label must equalTo("prueba1")
+                tasksAdmin.last.label must equalTo("prueba1")
+
+            }
+        }
+
    }
 }
