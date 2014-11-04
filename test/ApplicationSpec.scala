@@ -175,7 +175,30 @@ class ApplicationSpec extends Specification {
         }
       }
 
-        
+      "Prueba insertar un usuario en admin FEATURE 2" in {
+         running(FakeApplication()){
+
+          val Some(post) = route(FakeRequest(POST, "/users/admin/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post) must equalTo(CREATED)
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[]")
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+         }
+      }     
 
   }
 }
