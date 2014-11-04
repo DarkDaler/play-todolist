@@ -198,7 +198,22 @@ class ApplicationSpec extends Specification {
           jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
 
          }
-      }     
+      }
+
+      "Prueba buscar tareas de un usuario no registrado FEATURE2" in {
+        running(FakeApplication()){
+
+          val Some(post) = route(FakeRequest(POST, "/users/admin/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post) must equalTo(CREATED)
+
+          val Some(tasks) = route(FakeRequest(GET, "/users/noRegistrado/tasks"))
+          status(tasks) must equalTo(404)
+          contentAsString(tasks) must contain("Usuario no encontrado")
+        }
+
+      }
+
+        
 
   }
 }
