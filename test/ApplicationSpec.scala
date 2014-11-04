@@ -243,6 +243,42 @@ class ApplicationSpec extends Specification {
         }
       }
 
+      "Prueba insertar 2 en admin, 2 en anonimo, y eliminar 1 de admin FEATURE2" in {
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+          
+          val Some(post2) = route(FakeRequest(POST, "/users/admin/tasks").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(post2) must equalTo(CREATED)
+          
+          val Some(post3) = route(FakeRequest(POST, "/users/anonimo/tasks").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(post3) must equalTo(CREATED)
+
+          val Some(post4) = route(FakeRequest(POST, "/users/anonimo/tasks").withFormUrlEncodedBody("label" -> "prueba4"))
+          status(post4) must equalTo(CREATED)
+
+          val Some(deleteAdmin) = route(FakeRequest(DELETE, "/tasks/2"))
+          redirectLocation(deleteAdmin) must beSome.which(_ == "/tasks")
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":3,\"label\":\"prueba3\"},{\"id\":4,\"label\":\"prueba4\"}]")
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+          
+        }
+      }
         
 
   }
