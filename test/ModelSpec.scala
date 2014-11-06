@@ -211,5 +211,25 @@ class ModelSpec extends Specification {
 
             }
         }
+
+        "Test eliminar una task a usuario registrado y que tenga fecha" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+                Task.createDate("prueba2", "admin", "1976-08-20")
+
+                Task.createDate("pruebaAnonima", "anonimo", "1902-07-17")
+
+                Task.delete(2)
+
+                val tasksAnonimo = Task.getTaskUserData("anonimo", "1902-07-17")
+
+                tasksAnonimo.length must equalTo(1)
+
+                val tasksAdmin = Task.getTaskUserData("admin", "1976-08-20")
+
+                tasksAdmin.length must equalTo(0) 
+            }
+        }
     }
 }
