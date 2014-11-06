@@ -177,4 +177,18 @@ class ModelSpec extends Specification {
         }
 
    }
+   "Models FEATURE3" should {
+
+        "Test index vacio al insertar tarea de usuario con fecha" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+
+                val tasks = Task.all()
+
+                tasks.length must equalTo(0)
+            }
+        }
+    }
 }
