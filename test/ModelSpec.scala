@@ -190,5 +190,26 @@ class ModelSpec extends Specification {
                 tasks.length must equalTo(0)
             }
         }
+
+        "Test inserta 2 task a admin y 1 a anonimo con fecha y hacer getTaskUserDate(user, date)" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+                Task.createDate("prueba2", "admin", "1976-08-20")
+
+                Task.createDate("pruebaAnonima", "anonimo", "1902-07-17")
+
+                val tasksAnonimo = Task.all()
+
+                tasksAnonimo.length must equalTo(1)
+
+                val tasksAdmin = Task.getTaskUserData("admin", "1991-04-17")
+                val tasksAdmin2 = Task.getTaskUserData("admin", "1976-08-20")
+
+                tasksAdmin.length must equalTo(1)
+                tasksAdmin2.length must equalTo(1)
+
+            }
+        }
     }
 }
