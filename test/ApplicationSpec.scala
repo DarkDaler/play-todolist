@@ -337,5 +337,16 @@ class ApplicationSpec extends Specification {
           contentAsString(post1) must contain("Usuario no encontrado")
         }
       }
+      "Prueba buscar tareas con date de un usuario no registrado FEATURE3" in {
+        running(FakeApplication()){
+
+          val Some(post) = route(FakeRequest(POST, "/users/admin/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post) must equalTo(CREATED)
+
+          val Some(tasks) = route(FakeRequest(GET, "/users/noRegistrado/tasks/1991-10-20"))
+          status(tasks) must equalTo(404)
+          contentAsString(tasks) must contain("Usuario no encontrado")
+        }
+      }
   }
 }
