@@ -321,5 +321,13 @@ class ApplicationSpec extends Specification {
           contentAsString(post1) must contain("Introduce un dia valido entre 1 y 31")
         }
       }
+      "Prueba insertar una task con una fecha con mes incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-13-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(400)
+          contentAsString(post1) must contain("Introduce un mes valido entre 1 y 12")
+        }
+      }
   }
 }
