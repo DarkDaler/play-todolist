@@ -348,5 +348,35 @@ class ApplicationSpec extends Specification {
           contentAsString(tasks) must contain("Usuario no encontrado")
         }
       }
+      "Prueba insertar 2 usuarios en admin y 1 en anonimo FEATURE3" in {
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-10-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+          
+          val Some(post2) = route(FakeRequest(POST, "/users/admin/tasks/1991-08-17").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(post2) must equalTo(CREATED)
+          
+          val Some(post3) = route(FakeRequest(POST, "/users/anonimo/tasks/1991-06-10").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(post3) must equalTo(CREATED)
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":3,\"label\":\"prueba3\"}]")
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"},{\"id\":2,\"label\":\"prueba2\"}]")
+        }
+      }
+
   }
 }
