@@ -305,5 +305,13 @@ class ApplicationSpec extends Specification {
           jsonString must equalTo("[]")
         }
       }
+      "Prueba insertar una task con una fecha de formato incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/04-1991-17").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(400)
+          contentAsString(post1) must contain("Formato de fecha admitido YYYY-MM-DD")
+        }
+      }
   }
 }
