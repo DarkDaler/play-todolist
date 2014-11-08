@@ -279,7 +279,31 @@ class ApplicationSpec extends Specification {
           
         }
       }
-        
+  }
+  "Application FEATURE3" should {
 
+      "Prueba insertar una task para admin FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-04-17").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks/1991-04-17"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[]")
+        }
+      }
   }
 }
