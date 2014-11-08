@@ -313,5 +313,13 @@ class ApplicationSpec extends Specification {
           contentAsString(post1) must contain("Formato de fecha admitido YYYY-MM-DD")
         }
       }
+      "Prueba insertar una task con una fecha con día incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-04-50").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(400)
+          contentAsString(post1) must contain("Introduce un dia valido entre 1 y 31")
+        }
+      }
   }
 }
