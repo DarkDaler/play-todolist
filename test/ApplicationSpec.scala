@@ -377,6 +377,52 @@ class ApplicationSpec extends Specification {
           jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"},{\"id\":2,\"label\":\"prueba2\"}]")
         }
       }
+      "Prueba insertar 2 en admin, 2 en anonimo, y eliminar 1 de admin FEATURE3" in {
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-10-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+          
+          val Some(post2) = route(FakeRequest(POST, "/users/admin/tasks/1991-09-09").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(post2) must equalTo(CREATED)
+          
+          val Some(post3) = route(FakeRequest(POST, "/users/anonimo/tasks/1991-08-08").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(post3) must equalTo(CREATED)
+
+          val Some(post4) = route(FakeRequest(POST, "/users/anonimo/tasks/1991-07-07").withFormUrlEncodedBody("label" -> "prueba4"))
+          status(post4) must equalTo(CREATED)
+
+          val Some(deleteAdmin) = route(FakeRequest(DELETE, "/tasks/2"))
+          redirectLocation(deleteAdmin) must beSome.which(_ == "/tasks")
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":3,\"label\":\"prueba3\"},{\"id\":4,\"label\":\"prueba4\"}]")
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(tasksAdmin2) = route(FakeRequest(GET, "/users/admin/tasks/1991-09-09"))
+          status(tasksAdmin2) must equalTo(OK)
+
+          val json3 = contentAsJson(tasksAdmin2)
+          var jsonString3 = Json.stringify(json3)
+
+          jsonString3 must equalTo("[]")
+
+
+          
+        }
+      }
 
   }
 }
