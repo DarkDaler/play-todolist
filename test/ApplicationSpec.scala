@@ -279,7 +279,150 @@ class ApplicationSpec extends Specification {
           
         }
       }
-        
+  }
+  "Application FEATURE3" should {
+
+      "Prueba insertar una task para admin FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-04-17").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks/1991-04-17"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[]")
+        }
+      }
+      "Prueba insertar una task con una fecha de formato incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/04-1991-17").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(400)
+          contentAsString(post1) must contain("Formato de fecha admitido YYYY-MM-DD")
+        }
+      }
+      "Prueba insertar una task con una fecha con día incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-04-50").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(400)
+          contentAsString(post1) must contain("Introduce un dia valido entre 1 y 31")
+        }
+      }
+      "Prueba insertar una task con una fecha con mes incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-13-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(400)
+          contentAsString(post1) must contain("Introduce un mes valido entre 1 y 12")
+        }
+      }
+      "Prueba insertar una task con una fecha con user incorrecto FEATURE 3" in{
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/malUser/tasks/1991-10-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(404)
+          contentAsString(post1) must contain("Usuario no encontrado")
+        }
+      }
+      "Prueba buscar tareas con date de un usuario no registrado FEATURE3" in {
+        running(FakeApplication()){
+
+          val Some(post) = route(FakeRequest(POST, "/users/admin/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post) must equalTo(CREATED)
+
+          val Some(tasks) = route(FakeRequest(GET, "/users/noRegistrado/tasks/1991-10-20"))
+          status(tasks) must equalTo(404)
+          contentAsString(tasks) must contain("Usuario no encontrado")
+        }
+      }
+      "Prueba insertar 2 usuarios en admin y 1 en anonimo FEATURE3" in {
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-10-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+          
+          val Some(post2) = route(FakeRequest(POST, "/users/admin/tasks/1991-08-17").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(post2) must equalTo(CREATED)
+          
+          val Some(post3) = route(FakeRequest(POST, "/users/anonimo/tasks/1991-06-10").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(post3) must equalTo(CREATED)
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":3,\"label\":\"prueba3\"}]")
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"},{\"id\":2,\"label\":\"prueba2\"}]")
+        }
+      }
+      "Prueba insertar 2 en admin, 2 en anonimo, y eliminar 1 de admin FEATURE3" in {
+        running(FakeApplication()){
+
+          val Some(post1) = route(FakeRequest(POST, "/users/admin/tasks/1991-10-20").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(post1) must equalTo(CREATED)
+          
+          val Some(post2) = route(FakeRequest(POST, "/users/admin/tasks/1991-09-09").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(post2) must equalTo(CREATED)
+          
+          val Some(post3) = route(FakeRequest(POST, "/users/anonimo/tasks/1991-08-08").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(post3) must equalTo(CREATED)
+
+          val Some(post4) = route(FakeRequest(POST, "/users/anonimo/tasks/1991-07-07").withFormUrlEncodedBody("label" -> "prueba4"))
+          status(post4) must equalTo(CREATED)
+
+          val Some(deleteAdmin) = route(FakeRequest(DELETE, "/tasks/2"))
+          redirectLocation(deleteAdmin) must beSome.which(_ == "/tasks")
+
+          val Some(tasksAnonimo) = route(FakeRequest(GET, "/users/anonimo/tasks"))
+          status(tasksAnonimo) must equalTo(OK)
+
+          val json = contentAsJson(tasksAnonimo)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":3,\"label\":\"prueba3\"},{\"id\":4,\"label\":\"prueba4\"}]")
+
+          val Some(tasksAdmin) = route(FakeRequest(GET, "/users/admin/tasks"))
+          status(tasksAdmin) must equalTo(OK)
+
+          val json2 = contentAsJson(tasksAdmin)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(tasksAdmin2) = route(FakeRequest(GET, "/users/admin/tasks/1991-09-09"))
+          status(tasksAdmin2) must equalTo(OK)
+
+          val json3 = contentAsJson(tasksAdmin2)
+          var jsonString3 = Json.stringify(json3)
+
+          jsonString3 must equalTo("[]")
+
+
+          
+        }
+      }
 
   }
 }

@@ -177,4 +177,73 @@ class ModelSpec extends Specification {
         }
 
    }
+   "Models FEATURE3" should {
+
+        "Test index vacio al insertar tarea de usuario con fecha" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+
+                val tasks = Task.all()
+
+                tasks.length must equalTo(0)
+            }
+        }
+
+        "Test inserta 2 task a admin y 1 a anonimo con fecha y hacer getTaskUserDate(user, date)" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+                Task.createDate("prueba2", "admin", "1976-08-20")
+
+                Task.createDate("pruebaAnonima", "anonimo", "1902-07-17")
+
+                val tasksAnonimo = Task.all()
+
+                tasksAnonimo.length must equalTo(1)
+
+                val tasksAdmin = Task.getTaskUserData("admin", "1991-04-17")
+                val tasksAdmin2 = Task.getTaskUserData("admin", "1976-08-20")
+
+                tasksAdmin.length must equalTo(1)
+                tasksAdmin2.length must equalTo(1)
+
+            }
+        }
+
+        "Test eliminar una task a usuario registrado y que tenga fecha" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+                Task.createDate("prueba2", "admin", "1976-08-20")
+
+                Task.createDate("pruebaAnonima", "anonimo", "1902-07-17")
+
+                Task.delete(2)
+
+                val tasksAnonimo = Task.getTaskUserData("anonimo", "1902-07-17")
+
+                tasksAnonimo.length must equalTo(1)
+
+                val tasksAdmin = Task.getTaskUserData("admin", "1976-08-20")
+
+                tasksAdmin.length must equalTo(0) 
+            }
+        }
+
+        "Test insertar 2 task con fecha a usuario registrado y hacer getTaskUser(user)" in {
+                running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createDate("prueba1", "admin", "1991-04-17")
+                Task.createDate("prueba2", "admin", "1976-08-20")
+
+                val tasksAdmin = Task.getTaskUser("admin")
+
+                tasksAdmin.length must equalTo(2)
+                tasksAdmin.head.label must equalTo("prueba1")
+                tasksAdmin.last.label must equalTo("prueba2")
+            }
+        }
+    }
 }
