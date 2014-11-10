@@ -246,4 +246,14 @@ class ModelSpec extends Specification {
             }
         }
     }
+    "TDD Models Practica2" should {
+        "Test listar todas las categorias disponibles de admin vacio" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                val categorias = Task.listarCategorias("admin")
+
+                categorias.length must equalTo(0)
+            }
+        }
+    }
 }
