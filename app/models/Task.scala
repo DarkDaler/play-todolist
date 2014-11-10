@@ -96,4 +96,12 @@ object Task {
          ).executeUpdate()
       }
    }
+
+   def listarCategorias(id: String): List[String] = {
+      DB.withConnection {implicit c =>
+         SQL("select categoria from taskUser where id = {id}").on(
+            'id -> id
+         ).as(get[String]("categoria") *)
+      }
+   }
 }
