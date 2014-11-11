@@ -255,5 +255,18 @@ class ModelSpec extends Specification {
                 categorias.length must equalTo(0)
             }
         }
+        "Test crear dos categorias para admin" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                val categorias = Task.listarCategorias("admin")
+
+                categorias.length must equalTo(2)
+                categorias.head.categoria must equalTo("medicina")
+                categoria.last.categoria must equalTo("informatica")
+            }
+        }
     }
 }
