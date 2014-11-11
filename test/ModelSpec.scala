@@ -277,5 +277,16 @@ class ModelSpec extends Specification {
                 verificacion must equalTo(1)
             }
         }
+        "Test buscar una categoria no creada para un usuario" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                val verificacion = Task.verifyCategoria("admin", "noExistente")
+
+                verificacion must equalTo(0)
+            }
+        }
     }
 }
