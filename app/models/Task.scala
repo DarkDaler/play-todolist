@@ -126,6 +126,14 @@ object Task {
       }
    }
 
+   def categoriaExists(categoria: String): Long = {
+      DB.withConnection {implicit c =>
+         SQL("select count(*) from categoria where (categoria) = ({categoria})").on(
+            'categoria -> categoria
+         ).as(scalar[Long].single)
+      }
+   }
+
    def listarTareasCategoria(idUser: String, categoriaTask: String) : List[Task] = {
       DB.withConnection {implicit c =>
          SQL("select * from task where (idUser,categoriaTask) = ({idUser},{categoriaTask})").on(

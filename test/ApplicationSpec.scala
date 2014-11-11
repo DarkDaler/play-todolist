@@ -425,10 +425,9 @@ class ApplicationSpec extends Specification {
     "Prueba crear categoria no existente al usuario anonimo" in {
         running(FakeApplication()){
 
-          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/medidina"))
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
           status(categoriaAnonimo) must equalTo(CREATED)
 
-          contentAsString(tasks) must contain("Categoria creada correctamente")
         }
     }
 
