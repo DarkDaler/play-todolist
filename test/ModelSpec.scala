@@ -298,5 +298,17 @@ class ModelSpec extends Specification {
                 tasks.length must equalTo(0)
             }
         }
+        "Test crear dos tareas con una categoria para admin" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+                Task.createTaskCategoria("limpiar quirofano", "admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+
+                tasks.length must equalTo(2)
+            }
+        }
     }
 }
