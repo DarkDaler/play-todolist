@@ -359,5 +359,27 @@ class ModelSpec extends Specification {
             }
         }
 
+        "Test verificar categoria existente" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                val verificar = Task.categoriaExists("medicina")
+
+                verificar must equalTo(1)
+            }
+        }
+
+        "Test verificar categoria NO existente" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                val verificar = Task.categoriaExists("noExiste")
+
+                verificar must equalTo(0)
+            }
+        }
+
     }
 }
