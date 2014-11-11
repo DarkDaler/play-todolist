@@ -142,6 +142,20 @@ object Application extends Controller {
     )
   }
 
+  def newUserCat(user: String, categoria: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        if(Task.verifyCategoria(user, categoria) == 0){
+          if(Task.categoriaExists(categoria) == 0){
+            Task.createCategoria(user, categoria)
+            Created("Categoria creada correctamente")
+          }
+        }
+      }
+    )
+  }
+
   //ELIMINA UNA TAREA DADO SU ID. SI NO EXISTE DEVUELVE 404 NOT FOUND
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){
