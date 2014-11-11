@@ -288,5 +288,15 @@ class ModelSpec extends Specification {
                 verificacion must equalTo(0)
             }
         }
+        "Test listar tareas vacias con categoria" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+
+                tasks.length must equalTo(0)
+            }
+        }
     }
 }
