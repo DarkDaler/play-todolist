@@ -116,4 +116,13 @@ object Task {
          ).executeUpdate()
       }
    }
+
+   def verifyCategoria(user: String, categoria: String): Long = {
+      DB.withConnection {implicit c =>
+         SQL("select count(*) from categoria_users where (user,categoria) = ({user},{categoria})").on(
+            'user -> user,
+            'categoria -> categoria
+         ).as(scalar[Long].single)
+      }
+   }
 }
