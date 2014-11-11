@@ -345,7 +345,7 @@ class ModelSpec extends Specification {
 
                 Task.createCategoria("admin", "medicina")
 
-                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+                Task.createTaskCategoria("comprar bisturis", "admin", "medicina")
 
                 val tasks = Task.listarTareasCategoria("admin", "medicina")
                 tasks.length must equalTo(1)

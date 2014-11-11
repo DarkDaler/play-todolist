@@ -144,4 +144,14 @@ object Task {
          ).executeUpdate()
       }
    }
+   def modifyTaskCategoria(label: String, label2: String, idUser: String, categoriaTask: String){
+      DB.withConnection { implicit c =>
+         SQL("update task set label = ({label2}) where (label, idUser, categoriaTask) = ({label},{idUser},{categoriaTask})").on(
+            'label -> label,
+            'label2 -> label2,
+            'idUser -> idUser,
+            'categoriaTask -> categoriaTask
+         ).executeUpdate()
+      }
+   }
 }
