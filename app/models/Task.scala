@@ -97,11 +97,23 @@ object Task {
       }
    }
 
-   def listarCategorias(id: String): List[String] = {
+   def listarCategorias(user: String): List[String] = {
       DB.withConnection {implicit c =>
-         SQL("select categoria from categoriaUser where id = {id}").on(
-            'id -> id
+         SQL("select categoria from categoria_users where user = {user}").on(
+            'user -> user
          ).as(get[String]("categoria") *)
+      }
+   }
+
+   def createCategoria(user: String, categoria: String){
+      DB.withConnection { implicit c =>
+         SQL("insert into categoria (categoria) values ({categoria})").on(
+            'categoria -> categoria
+         ).executeUpdate()
+         SQL("insert into categoria_users (user,categoria) values ({user},{categoria})").on(
+            'user -> user,
+            'categoria -> categoria
+         ).executeUpdate()
       }
    }
 }

@@ -264,8 +264,6 @@ class ModelSpec extends Specification {
                 val categorias = Task.listarCategorias("admin")
 
                 categorias.length must equalTo(2)
-                categorias.head.categoria must equalTo("medicina")
-                categoria.last.categoria must equalTo("informatica")
             }
         }
     }
