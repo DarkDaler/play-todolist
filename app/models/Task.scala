@@ -125,4 +125,13 @@ object Task {
          ).as(scalar[Long].single)
       }
    }
+
+   def listarTareasCategoria(idUser: String, categoriaTask: String) : List[Task] = {
+      DB.withConnection {implicit c =>
+         SQL("select * from task where (idUser,categoriaTask) = ({idUser},{categoriaTask})").on(
+            'idUser -> idUser,
+            'categoriaTask -> categoriaTask
+         ).as(task *)
+      }
+   }
 }
