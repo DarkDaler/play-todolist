@@ -418,11 +418,19 @@ class ApplicationSpec extends Specification {
           var jsonString3 = Json.stringify(json3)
 
           jsonString3 must equalTo("[]")
-
-
-          
         }
       }
+  }
+  "TDD Application Practica2" should {
+    "Prueba crear categoria no existente al usuario anonimo" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/medidina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          contentAsString(tasks) must contain("Categoria creada correctamente")
+        }
+    }
 
   }
 }
