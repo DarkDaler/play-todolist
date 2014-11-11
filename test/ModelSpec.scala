@@ -326,5 +326,20 @@ class ModelSpec extends Specification {
                 tasks2.length must equalTo(1)
             }
         }
+        "Test listar tareas de un usuario sin categorias y otro con categorias" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+                val tasks2 = Task.listarTareasCategoria("anonimo", "noRegistrado")
+
+                tasks.length must equalTo(1)
+                tasks2.length must equalTo(0)
+            }
+        }
+
     }
 }
