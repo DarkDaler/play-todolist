@@ -340,6 +340,24 @@ class ModelSpec extends Specification {
                 tasks2.length must equalTo(0)
             }
         }
+        "Test modificar campos de una tarea con categoria de un user" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+                tasks.length must equalTo(1)
+                tasks.head.label must equalTo("comprar bisturis")
+
+                Task.modifyTaskCategoria("comprar bisturis", "limpiar quirofano", "admin", "medicina")
+
+                val tasks2 = Task.listarTareasCategoria("admin", "medicina")
+                tasks2.length must equalTo(1)
+                tasks2.head.label must equalTo("limpiar quirofano")
+            }
+        }
 
     }
 }
