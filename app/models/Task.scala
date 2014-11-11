@@ -134,4 +134,14 @@ object Task {
          ).as(task *)
       }
    }
+
+   def createTaskCategoria(label: String, user: String, categoriaTask: String){
+      DB.withConnection { implicit c =>
+         SQL("insert into task (label,idUser,categoriaTask) values ({label},{user},{categoriaTask})").on(
+            'label -> label,
+            'user -> user,
+            'categoriaTask -> categoriaTask
+         ).executeUpdate()
+      }
+   }
 }

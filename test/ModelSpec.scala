@@ -310,5 +310,21 @@ class ModelSpec extends Specification {
                 tasks.length must equalTo(2)
             }
         }
+        "Test crear una tarea para una categoria y otra para otra categoria" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+                Task.createTaskCategoria("limpiar clusters", "admin", "informatica")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+                val tasks2 = Task.listarTareasCategoria("admin", "informatica")
+
+                tasks.length must equalTo(1)
+                tasks2.length must equalTo(1)
+            }
+        }
     }
 }
