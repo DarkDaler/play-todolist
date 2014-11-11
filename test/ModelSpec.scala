@@ -266,5 +266,16 @@ class ModelSpec extends Specification {
                 categorias.length must equalTo(2)
             }
         }
+        "Test verificar si una categoria existe para un usuario" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                val verificacion = Task.verifyCategoria("admin", "informatica")
+
+                verificacion must equalTo(1)
+            }
+        }
     }
 }
