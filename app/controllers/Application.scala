@@ -149,7 +149,8 @@ object Application extends Controller {
         Created("Categoria creada correctamente")
       }
       else{
-        BadRequest("HHH")
+        Task.createCategoriaExistente(user, categoria)
+        Created("Categoria creada correctamente")
       }
     }
     else{

@@ -425,10 +425,30 @@ class ApplicationSpec extends Specification {
     "Prueba crear categoria no existente al usuario anonimo" in {
         running(FakeApplication()){
 
-          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/admin/categoria/medicina"))
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
           status(categoriaAnonimo) must equalTo(CREATED)
 
           contentAsString(categoriaAnonimo) must contain("Categoria creada correctamente")
+        }
+    }
+    "Prueba crear categoria ya existente al usuario anonimo" in {
+        running(FakeApplication()){
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(categoriaAnonimo2) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo2) must equalTo(400)
+
+          contentAsString(categoriaAnonimo2) must contain("Categoria ya creada en el usuario")
+        }
+    }
+    "Prueba a insertar una tarea a 2 usuarios distintos" in {
+        running(FakeApplication()){
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(categoriaAnonimo2) = route(FakeRequest(POST, "/users/admin/categoria/medicina"))
+          status(categoriaAnonimo2) must equalTo(CREATED)
+
+          contentAsString(categoriaAnonimo2) must contain("Categoria creada correctamente")
         }
     }
   }

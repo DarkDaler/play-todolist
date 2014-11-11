@@ -117,6 +117,15 @@ object Task {
       }
    }
 
+   def createCategoriaExistente(user: String, categoria: String){
+      DB.withConnection { implicit c =>
+         SQL("insert into categoria_users (user,categoria) values ({user},{categoria})").on(
+            'user -> user,
+            'categoria -> categoria
+         ).executeUpdate()
+      }
+   }
+
    def verifyCategoria(user: String, categoria: String): Long = {
       DB.withConnection {implicit c =>
          SQL("select count(*) from categoria_users where (user,categoria) = ({user},{categoria})").on(
