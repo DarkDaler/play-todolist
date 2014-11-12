@@ -568,8 +568,8 @@ class ApplicationSpec extends Specification {
 
           jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
 
-          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1", "label2" -> "limpiar quirofano"))
-          status(postTaskCategoriaUpdate) must equalTo(OK)
+          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/anonimo/categoria/medicina/tasks/prueba1/limpiar-quirofano"))
+          status(postTaskCategoriaUpdate) must equalTo(CREATED)
 
           val Some(taskCategoriaUpdate) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
           status(taskCategoriaUpdate) must equalTo(OK)
@@ -577,7 +577,7 @@ class ApplicationSpec extends Specification {
           val json2 = contentAsJson(taskCategoriaUpdate)
           var jsonString2 = Json.stringify(json2)
 
-          jsonString2 must equalTo("[{\"id\":1,\"label\":\"limpiar quirofano\"}]")
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"limpiar-quirofano\"}]")
         }
     }
   }

@@ -193,6 +193,21 @@ object Application extends Controller {
       } 
     )
   }
+  def modifyTasksUserCat(label: String, label2: String, user: String, categoria: String) = Action {
+    if(Task.verifyUser(user) == 1){
+      if(Task.verifyCategoria(user, categoria) == 1){
+          Task.modifyTaskCategoria(label,label2,user,categoria)
+          val json = Json.toJson(Task.getTask())
+          Created(json)
+      }
+      else{
+        BadRequest("Categoria no encontrada o no vinculada al usuario")
+      }
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }  
+  }
 
   //ELIMINA UNA TAREA DADO SU ID. SI NO EXISTE DEVUELVE 404 NOT FOUND
   def deleteTask(id: Long) = Action {

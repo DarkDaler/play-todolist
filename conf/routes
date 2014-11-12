@@ -17,9 +17,10 @@ POST     /users/:login/categoria/:categoria   controllers.Application.newUserCat
 
 # TASK-CATEGORIA
 
+PUT     /users/:login/categoria/:categoria/tasks/:label/:label2   controllers.Application.modifyTasksUserCat(label: String, label2: String, login: String, categoria: String)
 GET     /users/:login/categoria/:categoria/tasks   controllers.Application.getTasksUserCat(login: String, categoria: String)
 POST     /users/:login/categoria/:categoria/tasks   controllers.Application.newTasksUserCat(login: String, categoria: String)
-PUT     /users/:login/categoria/:categoria/tasks   controllers.Application.modifyTasksUserCat(login: String, categoria: String)
+
 
 # LOGIN
 GET     /users/:login/tasks         controllers.Application.getTaskUser(login: String)
