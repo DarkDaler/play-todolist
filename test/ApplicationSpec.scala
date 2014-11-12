@@ -482,6 +482,23 @@ class ApplicationSpec extends Specification {
           contentAsString(taskCategoria) must contain("Usuario no encontrado")
         }
     }
-    
+    "Prueba a crear 1 tarea y listarla en la categoria medicina del user anonimo" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+        }
+    }    
   }
 }
