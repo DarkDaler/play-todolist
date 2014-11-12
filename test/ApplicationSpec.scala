@@ -601,5 +601,26 @@ class ApplicationSpec extends Specification {
           status(postTaskCategoriaUpdate) must equalTo(404)
         }
     }
+    "Prueba a modificar una tarea de una categoria que no existe" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/anonimo/categoria/informatica/tasks/prueba1/limpiar-quirofano"))
+          status(postTaskCategoriaUpdate) must equalTo(400)
+        }
+    }
   }
 }
