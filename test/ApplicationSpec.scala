@@ -451,6 +451,18 @@ class ApplicationSpec extends Specification {
           contentAsString(categoriaAnonimo2) must contain("Categoria creada correctamente")
         }
     }
+    "Prueba a listar tareas de una categoria vacia" in {
+        running(FakeApplication()){
+
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[]")
+        }
+    }
     
   }
 }
