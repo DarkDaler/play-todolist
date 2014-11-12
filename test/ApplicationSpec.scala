@@ -551,5 +551,34 @@ class ApplicationSpec extends Specification {
           jsonString2 must equalTo("[{\"id\":2,\"label\":\"prueba2\"},{\"id\":3,\"label\":\"prueba3\"}]")
         }
     }
+    "Prueba a modificar una tarea existente en anonimo y en medicina" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1", "label2" -> "limpiar quirofano"))
+          status(postTaskCategoriaUpdate) must equalTo(OK)
+
+          val Some(taskCategoriaUpdate) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoriaUpdate) must equalTo(OK)
+
+          val json2 = contentAsJson(taskCategoriaUpdate)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"limpiar quirofano\"}]")
+        }
+    }
   }
 }
