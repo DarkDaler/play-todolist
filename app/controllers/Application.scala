@@ -165,7 +165,7 @@ object Application extends Controller {
         Ok(json)
       }
       else{
-        BadRequest("Usuario o categoria no encontrado")
+        BadRequest("Categoria no encontrada o no vinculada al usuario")
       }
     }
     else{
