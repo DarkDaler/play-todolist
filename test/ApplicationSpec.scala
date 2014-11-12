@@ -518,5 +518,38 @@ class ApplicationSpec extends Specification {
           contentAsString(postTaskCategoria) must contain("Usuario no encontrado")
         }
     }    
+    "Prueba a crear 1 tarea en medicina en anonimo y 2 en informatica en admin" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(categoriaAdmin) = route(FakeRequest(POST, "/users/admin/categoria/informatica"))
+          status(categoriaAdmin) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(postTaskCategoria2) = route(FakeRequest(POST, "/users/admin/categoria/informatica/tasks").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(postTaskCategoria2) must equalTo(CREATED)
+          val Some(postTaskCategoria3) = route(FakeRequest(POST, "/users/admin/categoria/informatica/tasks").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(postTaskCategoria3) must equalTo(CREATED)
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(taskCategoria2) = route(FakeRequest(GET, "/users/admin/categoria/informatica/tasks"))     
+          status(taskCategoria2) must equalTo(OK)
+
+          val json2 = contentAsJson(taskCategoria2)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":2,\"label\":\"prueba2\"},{\"id\":3,\"label\":\"prueba3\"}]")
+        }
+    }
   }
 }
