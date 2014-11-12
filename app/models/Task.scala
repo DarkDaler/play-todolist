@@ -96,7 +96,7 @@ object Task {
          ).executeUpdate()
       }
    }
-
+   //METODO QUE LISTA TODAS LAS CATEGORIAS CREADAS PARA UN USER
    def listarCategorias(user: String): List[String] = {
       DB.withConnection {implicit c =>
          SQL("select categoria from categoria_users where user = {user}").on(
@@ -104,7 +104,7 @@ object Task {
          ).as(get[String]("categoria") *)
       }
    }
-
+   //METODO QUE CREA UNA CATEGORIA PARA UN USER
    def createCategoria(user: String, categoria: String){
       DB.withConnection { implicit c =>
          SQL("insert into categoria (categoria) values ({categoria})").on(
@@ -116,7 +116,7 @@ object Task {
          ).executeUpdate()
       }
    }
-
+   //METODO PARA ENLAZAR UNA CATEGORIA EXISTENTE A UN USER
    def createCategoriaExistente(user: String, categoria: String){
       DB.withConnection { implicit c =>
          SQL("insert into categoria_users (user,categoria) values ({user},{categoria})").on(
@@ -125,7 +125,7 @@ object Task {
          ).executeUpdate()
       }
    }
-
+   //METODO AUXILIAR PARA VERIFICAR SI EXISTE UNA CATEGORIA PARA UN USER
    def verifyCategoria(user: String, categoria: String): Long = {
       DB.withConnection {implicit c =>
          SQL("select count(*) from categoria_users where (user,categoria) = ({user},{categoria})").on(
@@ -134,7 +134,7 @@ object Task {
          ).as(scalar[Long].single)
       }
    }
-
+   //METODO AUXILIAR QUE VERIFICA SI UNA CATEGORIA EXISTE
    def categoriaExists(categoria: String): Long = {
       DB.withConnection {implicit c =>
          SQL("select count(*) from categoria where (categoria) = ({categoria})").on(
@@ -142,7 +142,7 @@ object Task {
          ).as(scalar[Long].single)
       }
    }
-
+   //METODO QUE LISTA LAS TAREAS ASOCIADAS A UNA CATEGORIA Y UN USER
    def listarTareasCategoria(idUser: String, categoriaTask: String) : List[Task] = {
       DB.withConnection {implicit c =>
          SQL("select * from task where (idUser,categoriaTask) = ({idUser},{categoriaTask})").on(
@@ -151,7 +151,7 @@ object Task {
          ).as(task *)
       }
    }
-
+   //METODO QUE CREA UNA TAREA PARA UNA CATEGORIA
    def createTaskCategoria(label: String, user: String, categoriaTask: String){
       DB.withConnection { implicit c =>
          SQL("insert into task (label,idUser,categoriaTask) values ({label},{user},{categoriaTask})").on(
@@ -161,6 +161,7 @@ object Task {
          ).executeUpdate()
       }
    }
+   //METODO QUE MODIFICA EL LABEL DE UNA CATEGORIA
    def modifyTaskCategoria(label: String, label2: String, idUser: String, categoriaTask: String){
       DB.withConnection { implicit c =>
          SQL("update task set label = ({label2}) where (label, idUser, categoriaTask) = ({label},{idUser},{categoriaTask})").on(
