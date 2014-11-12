@@ -418,11 +418,209 @@ class ApplicationSpec extends Specification {
           var jsonString3 = Json.stringify(json3)
 
           jsonString3 must equalTo("[]")
-
-
-          
         }
       }
+  }
+  "TDD Application Practica2" should {
+    "Prueba crear categoria no existente al usuario anonimo" in {
+        running(FakeApplication()){
 
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          contentAsString(categoriaAnonimo) must contain("Categoria creada correctamente")
+        }
+    }
+    "Prueba crear categoria ya existente al usuario anonimo" in {
+        running(FakeApplication()){
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(categoriaAnonimo2) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo2) must equalTo(400)
+
+          contentAsString(categoriaAnonimo2) must contain("Categoria ya creada en el usuario")
+        }
+    }
+    "Prueba a insertar una categoria a 2 usuarios distintos" in {
+        running(FakeApplication()){
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(categoriaAnonimo2) = route(FakeRequest(POST, "/users/admin/categoria/medicina"))
+          status(categoriaAnonimo2) must equalTo(CREATED)
+
+          contentAsString(categoriaAnonimo2) must contain("Categoria creada correctamente")
+        }
+    }
+    "Prueba a listar tareas de una categoria vacia" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[]")
+        }
+    }
+    "Prueba a listar tareas de una categoria no existente" in {
+        running(FakeApplication()){
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(400)
+          contentAsString(taskCategoria) must contain("Categoria no encontrada o no vinculada al usuario")
+        }
+    }
+    "Prueba a listar tareas de un usuario no existente" in {
+        running(FakeApplication()){
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/noExiste/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(404)
+          contentAsString(taskCategoria) must contain("Usuario no encontrado")
+        }
+    }
+    "Prueba a crear 1 tarea y listarla en la categoria medicina del user anonimo" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+        }
+    }
+    "Prueba a crear 1 tarea en una categoria no existente" in {
+        running(FakeApplication()){
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(400)
+
+          contentAsString(postTaskCategoria) must contain("Categoria no encontrada o no vinculada al usuario")
+        }
+    }    
+    "Prueba a crear 1 tarea en un usuario no existente" in {
+        running(FakeApplication()){
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/noExiste/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(404)
+
+          contentAsString(postTaskCategoria) must contain("Usuario no encontrado")
+        }
+    }    
+    "Prueba a crear 1 tarea en medicina en anonimo y 2 en informatica en admin" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(categoriaAdmin) = route(FakeRequest(POST, "/users/admin/categoria/informatica"))
+          status(categoriaAdmin) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(postTaskCategoria2) = route(FakeRequest(POST, "/users/admin/categoria/informatica/tasks").withFormUrlEncodedBody("label" -> "prueba2"))
+          status(postTaskCategoria2) must equalTo(CREATED)
+          val Some(postTaskCategoria3) = route(FakeRequest(POST, "/users/admin/categoria/informatica/tasks").withFormUrlEncodedBody("label" -> "prueba3"))
+          status(postTaskCategoria3) must equalTo(CREATED)
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(taskCategoria2) = route(FakeRequest(GET, "/users/admin/categoria/informatica/tasks"))     
+          status(taskCategoria2) must equalTo(OK)
+
+          val json2 = contentAsJson(taskCategoria2)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":2,\"label\":\"prueba2\"},{\"id\":3,\"label\":\"prueba3\"}]")
+        }
+    }
+    "Prueba a modificar una tarea existente en anonimo y en medicina" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/anonimo/categoria/medicina/tasks/prueba1/limpiar-quirofano"))
+          status(postTaskCategoriaUpdate) must equalTo(CREATED)
+
+          val Some(taskCategoriaUpdate) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoriaUpdate) must equalTo(OK)
+
+          val json2 = contentAsJson(taskCategoriaUpdate)
+          var jsonString2 = Json.stringify(json2)
+
+          jsonString2 must equalTo("[{\"id\":1,\"label\":\"limpiar-quirofano\"}]")
+        }
+    }
+    "Prueba a modificar una tarea de un user que no existe" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/noExiste/categoria/medicina/tasks/prueba1/limpiar-quirofano"))
+          status(postTaskCategoriaUpdate) must equalTo(404)
+        }
+    }
+    "Prueba a modificar una tarea de una categoria que no existe" in {
+        running(FakeApplication()){
+
+          val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
+          status(categoriaAnonimo) must equalTo(CREATED)
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
+
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(OK)
+
+          val json = contentAsJson(taskCategoria)
+          var jsonString = Json.stringify(json)
+
+          jsonString must equalTo("[{\"id\":1,\"label\":\"prueba1\"}]")
+
+          val Some(postTaskCategoriaUpdate) = route(FakeRequest(PUT, "/users/anonimo/categoria/informatica/tasks/prueba1/limpiar-quirofano"))
+          status(postTaskCategoriaUpdate) must equalTo(400)
+        }
+    }
   }
 }

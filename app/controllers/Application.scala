@@ -142,6 +142,75 @@ object Application extends Controller {
     )
   }
 
+  //METODO QUE CREA UNA CATEGORIA PARA UN USUARIO
+  def newUserCat(user: String, categoria: String) = Action {
+    if(Task.verifyCategoria(user, categoria) == 0){
+      if(Task.categoriaExists(categoria) == 0){
+        Task.createCategoria(user, categoria)
+        Created("Categoria creada correctamente")
+      }
+      else{
+        Task.createCategoriaExistente(user, categoria)
+        Created("Categoria creada correctamente")
+      }
+    }
+    else{
+      BadRequest("Categoria ya creada en el usuario")
+    }
+  }
+  //METODO QUE LISTA LAS CATEGORIAS DE UN USUARIO EN UNA CATEGORIA
+  def getTasksUserCat(user: String, categoria: String) = Action {
+    if(Task.verifyUser(user) == 1){
+      if(Task.verifyCategoria(user, categoria) == 1){
+        val json = Json.toJson(Task.listarTareasCategoria(user, categoria))
+        Ok(json)
+      }
+      else{
+        BadRequest("Categoria no encontrada o no vinculada al usuario")
+      }
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }
+  }
+  //METODO QUE CREA UNA TAREA EN UNA CATEGORIA PARA UN USUARIO
+  def newTasksUserCat(user: String, categoria: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        if(Task.verifyUser(user) == 1){
+          if(Task.verifyCategoria(user, categoria) == 1){
+              Task.createTaskCategoria(label,user,categoria)
+              val json = Json.toJson(Task.getTask())
+              Created(json)
+          }
+          else{
+            BadRequest("Categoria no encontrada o no vinculada al usuario")
+          }
+        }
+        else{
+          NotFound("Usuario no encontrado")
+        }  
+      } 
+    )
+  }
+  //METODO QUE MODIFICA EL LABEL DE UNA TAREA DE UNA CATEGORIA
+  def modifyTasksUserCat(label: String, label2: String, user: String, categoria: String) = Action {
+    if(Task.verifyUser(user) == 1){
+      if(Task.verifyCategoria(user, categoria) == 1){
+          Task.modifyTaskCategoria(label,label2,user,categoria)
+          val json = Json.toJson(Task.getTask())
+          Created(json)
+      }
+      else{
+        BadRequest("Categoria no encontrada o no vinculada al usuario")
+      }
+    }
+    else{
+      NotFound("Usuario no encontrado")
+    }  
+  }
+
   //ELIMINA UNA TAREA DADO SU ID. SI NO EXISTE DEVUELVE 404 NOT FOUND
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){

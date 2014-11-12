@@ -246,4 +246,140 @@ class ModelSpec extends Specification {
             }
         }
     }
+    "TDD Models Practica2" should {
+        "Test listar todas las categorias disponibles de admin vacio" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                val categorias = Task.listarCategorias("admin")
+
+                categorias.length must equalTo(0)
+            }
+        }
+        "Test crear dos categorias para admin" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                val categorias = Task.listarCategorias("admin")
+
+                categorias.length must equalTo(2)
+            }
+        }
+        "Test verificar si una categoria existe para un usuario" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                val verificacion = Task.verifyCategoria("admin", "informatica")
+
+                verificacion must equalTo(1)
+            }
+        }
+        "Test buscar una categoria no creada para un usuario" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                val verificacion = Task.verifyCategoria("admin", "noExistente")
+
+                verificacion must equalTo(0)
+            }
+        }
+        "Test listar tareas vacias con categoria" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+
+                tasks.length must equalTo(0)
+            }
+        }
+        "Test crear dos tareas con una categoria para admin" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+                Task.createTaskCategoria("limpiar quirofano", "admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+
+                tasks.length must equalTo(2)
+            }
+        }
+        "Test crear una tarea para una categoria y otra para otra categoria" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+                Task.createCategoria("admin", "informatica")
+
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+                Task.createTaskCategoria("limpiar clusters", "admin", "informatica")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+                val tasks2 = Task.listarTareasCategoria("admin", "informatica")
+
+                tasks.length must equalTo(1)
+                tasks2.length must equalTo(1)
+            }
+        }
+        "Test listar tareas de un usuario sin categorias y otro con categorias" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                Task.createTaskCategoria("comprar  bisturis", "admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+                val tasks2 = Task.listarTareasCategoria("anonimo", "noRegistrado")
+
+                tasks.length must equalTo(1)
+                tasks2.length must equalTo(0)
+            }
+        }
+        "Test modificar campos de una tarea con categoria de un user" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                Task.createTaskCategoria("comprar bisturis", "admin", "medicina")
+
+                val tasks = Task.listarTareasCategoria("admin", "medicina")
+                tasks.length must equalTo(1)
+                tasks.head.label must equalTo("comprar bisturis")
+
+                Task.modifyTaskCategoria("comprar bisturis", "limpiar quirofano", "admin", "medicina")
+
+                val tasks2 = Task.listarTareasCategoria("admin", "medicina")
+                tasks2.length must equalTo(1)
+                tasks2.head.label must equalTo("limpiar quirofano")
+            }
+        }
+
+        "Test verificar categoria existente" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                val verificar = Task.categoriaExists("medicina")
+
+                verificar must equalTo(1)
+            }
+        }
+
+        "Test verificar categoria NO existente" in {
+            running(FakeApplication(additionalConfiguration = inMemoryDatabase())){
+
+                Task.createCategoria("admin", "medicina")
+
+                val verificar = Task.categoriaExists("noExiste")
+
+                verificar must equalTo(0)
+            }
+        }
+
+    }
 }
