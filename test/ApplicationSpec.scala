@@ -441,7 +441,7 @@ class ApplicationSpec extends Specification {
           contentAsString(categoriaAnonimo2) must contain("Categoria ya creada en el usuario")
         }
     }
-    "Prueba a insertar una tarea a 2 usuarios distintos" in {
+    "Prueba a insertar una categoria a 2 usuarios distintos" in {
         running(FakeApplication()){
           val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
           status(categoriaAnonimo) must equalTo(CREATED)
@@ -451,5 +451,6 @@ class ApplicationSpec extends Specification {
           contentAsString(categoriaAnonimo2) must contain("Categoria creada correctamente")
         }
     }
+    
   }
 }
