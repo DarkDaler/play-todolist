@@ -509,5 +509,14 @@ class ApplicationSpec extends Specification {
           contentAsString(postTaskCategoria) must contain("Categoria no encontrada o no vinculada al usuario")
         }
     }    
+    "Prueba a crear 1 tarea en un usuario no existente" in {
+        running(FakeApplication()){
+
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/noExiste/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(404)
+
+          contentAsString(postTaskCategoria) must contain("Usuario no encontrado")
+        }
+    }    
   }
 }
