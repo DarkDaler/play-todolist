@@ -173,6 +173,27 @@ object Application extends Controller {
     }
   }
 
+  def newTasksUserCat(user: String, categoria: String) = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index(Task.all(), errors)),
+      label => {
+        if(Task.verifyUser(user) == 1){
+          if(Task.verifyCategoria(user, categoria) == 1){
+              Task.createTaskCategoria(label,user,categoria)
+              val json = Json.toJson(Task.getTask())
+              Created(json)
+          }
+          else{
+            BadRequest("Categoria no encontrada o no vinculada al usuario")
+          }
+        }
+        else{
+          NotFound("Usuario no encontrado")
+        }  
+      } 
+    )
+  }
+
   //ELIMINA UNA TAREA DADO SU ID. SI NO EXISTE DEVUELVE 404 NOT FOUND
   def deleteTask(id: Long) = Action {
     if(Task.getTasks(id) != Nil){

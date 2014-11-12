@@ -488,8 +488,8 @@ class ApplicationSpec extends Specification {
           val Some(categoriaAnonimo) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina"))
           status(categoriaAnonimo) must equalTo(CREATED)
 
-          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks"))
-          status(categoriaAnonimo) must equalTo(CREATED)
+          val Some(postTaskCategoria) = route(FakeRequest(POST, "/users/anonimo/categoria/medicina/tasks").withFormUrlEncodedBody("label" -> "prueba1"))
+          status(postTaskCategoria) must equalTo(CREATED)
           
           val Some(taskCategoria) = route(FakeRequest(GET, "/users/anonimo/categoria/medicina/tasks"))     
           status(taskCategoria) must equalTo(OK)
