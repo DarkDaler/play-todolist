@@ -474,6 +474,14 @@ class ApplicationSpec extends Specification {
           contentAsString(taskCategoria) must contain("Categoria no encontrada o no vinculada al usuario")
         }
     }
+    "Prueba a listar tareas de un usuario no existente" in {
+        running(FakeApplication()){
+          
+          val Some(taskCategoria) = route(FakeRequest(GET, "/users/noExiste/categoria/medicina/tasks"))     
+          status(taskCategoria) must equalTo(404)
+          contentAsString(taskCategoria) must contain("Usuario no encontrado")
+        }
+    }
     
   }
 }
