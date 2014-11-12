@@ -14,6 +14,7 @@ DELETE  /tasks/:id                  controllers.Application.deleteTask(id: Long)
 # CATEGORIA
 
 POST     /users/:login/categoria/:categoria   controllers.Application.newUserCat(login: String, categoria: String)
+GET     /users/:login/categoria/:categoria/tasks   controllers.Application.getTasksUserCat(login: String, categoria: String)
 
 # LOGIN
 GET     /users/:login/tasks         controllers.Application.getTaskUser(login: String)
